@@ -1,0 +1,887 @@
+Building configuration...
+
+Current configuration : 28633 bytes
+!
+! Last configuration change at 04:43:01 GMT Mon May 19 2025 by dsuresh
+! NVRAM config last updated at 15:52:42 GMT Thu May 15 2025 by svc_netops
+!
+version 17.12
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+service internal
+service compress-config
+service sequence-numbers
+service call-home
+service unsupported-transceiver
+platform punt-keepalive disable-kernel-core
+!
+hostname hyd-kvm-core01
+!
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+logging count
+logging message-counter log
+logging snmp-authfail
+logging buffered 1024000
+no logging console
+aaa new-model
+!
+!
+aaa group server tacacs+ AAA_AUTH
+ server name AAA_va1-ise-psn03
+ server name AAA_ca1-ise-psn04
+ ip vrf forwarding Mgmt-vrf
+ ip tacacs source-interface GigabitEthernet0/0
+!
+aaa authentication login default group AAA_AUTH local-case
+aaa authentication login CONSOLE group AAA_AUTH local-case
+aaa authentication enable default group AAA_AUTH enable
+aaa authorization console
+aaa authorization config-commands
+aaa authorization exec default group AAA_AUTH local if-authenticated 
+aaa authorization exec CONSOLE if-authenticated 
+aaa authorization commands 1 default group AAA_AUTH local if-authenticated 
+aaa authorization commands 1 CONSOLE if-authenticated 
+aaa authorization commands 15 default group AAA_AUTH local if-authenticated 
+aaa authorization commands 15 CONSOLE if-authenticated 
+aaa accounting exec default start-stop group AAA_AUTH
+aaa accounting commands 1 default start-stop group AAA_AUTH
+aaa accounting commands 15 default start-stop group AAA_AUTH
+aaa accounting network default start-stop group AAA_AUTH
+aaa accounting connection default start-stop group AAA_AUTH
+aaa accounting system default start-stop group AAA_AUTH
+!
+!
+aaa session-id common
+clock timezone GMT 0 0
+boot system bootflash:packages.conf
+!
+!
+!
+!
+!
+ip multicast-routing 
+no ip domain lookup
+ip domain name net.ea.com
+ip dhcp bootp ignore
+ip dhcp excluded-address 192.168.1.1 192.168.1.10
+!
+ip dhcp pool VLAN200
+ network 192.168.1.0 255.255.255.0
+ default-router 192.168.1.1 
+ dns-server 8.8.8.8 
+!
+!
+!
+login on-success log
+ipv6 unicast-routing
+udld enable
+
+vtp domain FDO282404LM
+vtp mode off
+vtp version 1
+!
+!
+!
+!
+!
+!
+!
+mpls label mode all-vrfs protocol all-afs per-vrf
+!
+crypto pki trustpoint SLA-TrustPoint
+ enrollment pkcs12
+ revocation-check crl
+ hash sha256
+!
+crypto pki trustpoint TP-self-signed-3968698086
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3968698086
+ revocation-check none
+ rsakeypair TP-self-signed-3968698086
+ hash sha256
+!
+!
+crypto pki certificate chain SLA-TrustPoint
+ certificate ca 01
+  30820321 30820209 A0030201 02020101 300D0609 2A864886 F70D0101 0B050030 
+  32310E30 0C060355 040A1305 43697363 6F312030 1E060355 04031317 43697363 
+  6F204C69 63656E73 696E6720 526F6F74 20434130 1E170D31 33303533 30313934 
+  3834375A 170D3338 30353330 31393438 34375A30 32310E30 0C060355 040A1305 
+  43697363 6F312030 1E060355 04031317 43697363 6F204C69 63656E73 696E6720 
+  526F6F74 20434130 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 
+  82010A02 82010100 A6BCBD96 131E05F7 145EA72C 2CD686E6 17222EA1 F1EFF64D 
+  CBB4C798 212AA147 C655D8D7 9471380D 8711441E 1AAF071A 9CAE6388 8A38E520 
+  1C394D78 462EF239 C659F715 B98C0A59 5BBB5CBD 0CFEBEA3 700A8BF7 D8F256EE 
+  4AA4E80D DB6FD1C9 60B1FD18 FFC69C96 6FA68957 A2617DE7 104FDC5F EA2956AC 
+  7390A3EB 2B5436AD C847A2C5 DAB553EB 69A9A535 58E9F3E3 C0BD23CF 58BD7188 
+  68E69491 20F320E7 948E71D7 AE3BCC84 F10684C7 4BC8E00F 539BA42B 42C68BB7 
+  C7479096 B4CB2D62 EA2F505D C7B062A4 6811D95B E8250FC4 5D5D5FB8 8F27D191 
+  C55F0D76 61F9A4CD 3D992327 A8BB03BD 4E6D7069 7CBADF8B DF5F4368 95135E44 
+  DFC7C6CF 04DD7FD1 02030100 01A34230 40300E06 03551D0F 0101FF04 04030201 
+  06300F06 03551D13 0101FF04 05300301 01FF301D 0603551D 0E041604 1449DC85 
+  4B3D31E5 1B3E6A17 606AF333 3D3B4C73 E8300D06 092A8648 86F70D01 010B0500 
+  03820101 00507F24 D3932A66 86025D9F E838AE5C 6D4DF6B0 49631C78 240DA905 
+  604EDCDE FF4FED2B 77FC460E CD636FDB DD44681E 3A5673AB 9093D3B1 6C9E3D8B 
+  D98987BF E40CBD9E 1AECA0C2 2189BB5C 8FA85686 CD98B646 5575B146 8DFC66A8 
+  467A3DF4 4D565700 6ADF0F0D CF835015 3C04FF7C 21E878AC 11BA9CD2 55A9232C 
+  7CA7B7E6 C1AF74F6 152E99B7 B1FCF9BB E973DE7F 5BDDEB86 C71E3B49 1765308B 
+  5FB0DA06 B92AFE7F 494E8A9E 07B85737 F3A58BE1 1A48A229 C37C1E69 39F08678 
+  80DDCD16 D6BACECA EEBC7CF9 8428787B 35202CDC 60E4616A B623CDBD 230E3AFB 
+  418616A9 4093E049 4D10AB75 27E86F73 932E35B5 8862FDAE 0275156F 719BB2F0 
+  D697DF7F 28
+  	quit
+crypto pki certificate chain TP-self-signed-3968698086
+ certificate self-signed 01
+  30820330 30820218 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  31312F30 2D060355 04031326 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 33393638 36393830 3836301E 170D3235 30333238 31323539 
+  32315A17 0D333530 33323831 32353932 315A3031 312F302D 06035504 03132649 
+  4F532D53 656C662D 5369676E 65642D43 65727469 66696361 74652D33 39363836 
+  39383038 36308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201 
+  0A028201 0100EC73 0F9BEF14 6A36D86F 79F550C1 0B8671F2 FD29627E 1F7E8141 
+  973D0B4C D9EC22FF 4DF0AC8D DFCD4DDB B1AF297D 1449C2A7 76285F5C 43C98E37 
+  4C19C33E 698EC8D7 AA29E6E6 6E9C1F99 EA70965E 37ED58F0 6A30A32A 1F99EA53 
+  D1BB2A28 D60D3634 18959CC9 62BFACAE 62104C76 12900D8A B89EF468 CADE9E53 
+  06977E99 64FE4DEF 2DC8E8A9 C15F9F01 48ECF214 A4E6082F 8FD816B3 EBDBA498 
+  322C9BAB B334CACF AD5AFEA6 56696BD8 62418429 A0ED0C2B 4EC4C5FA 4FC95211 
+  8AFCCC78 4CC4228D 2307F968 0FF793AD 3F97DD33 F1351198 B51B8436 9CD0F5B3 
+  7A336D24 5AD9CA91 457E2AF4 BB840928 BF2BA491 0A7FE333 69D521E6 E215EAB1 
+  B429029D 373F0203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 
+  301F0603 551D2304 18301680 141A451C C13AB0B9 5C6E41EE 0B92212B 7297A4A0 
+  DE301D06 03551D0E 04160414 1A451CC1 3AB0B95C 6E41EE0B 92212B72 97A4A0DE 
+  300D0609 2A864886 F70D0101 05050003 82010100 88FEA8D5 D88C249D 384DAECA 
+  53BE0061 5821E99B 37A7AB18 BEB40417 85E8BBFF 25C10771 051B1001 88C9FD08 
+  02C6FFC7 CF0E821C EB03D143 12706F23 BFB2D206 8D239AF3 4F0280D9 4943B836 
+  70ECB661 946FB58C 6158EBFB A732E0A7 48B76DF4 DA7D6250 8BC110AC BF747A27 
+  8C6E5371 D102EE80 BF238A12 9BFDEABC 33D8E6F8 D9B8C015 CA59B4F1 2CE3FF91 
+  212C0B1A 6B087F64 E419D95F 7B828BE0 EBB247F7 8C9820AA 452E52A4 53C4B890 
+  DB959A01 E99F77F6 64211F65 1A9A2E53 700DB94B 8423A7EC FBD5711E A3CB2FE1 
+  7AAC2D0E E6AB981C 6C601E3B 9F09B4A1 86ECD315 8CC85C27 5CD0F665 67246767 
+  E20F4B29 2E3FFAB3 58EA7FAF 25543D36 381EED22
+  	quit
+!
+!
+license boot level network-advantage addon dna-advantage
+archive
+ log config
+  logging enable
+  logging size 500
+  notify syslog contenttype plaintext
+memory free low-watermark processor 602900
+!
+system mtu 9198
+diagnostic bootup level minimal
+!
+spanning-tree mode rapid-pvst
+spanning-tree loopguard default
+spanning-tree logging
+spanning-tree portfast edge bpduguard default
+spanning-tree extend system-id
+spanning-tree vlan 200 priority 24576
+!
+!
+errdisable recovery cause udld
+errdisable recovery cause security-violation
+errdisable recovery cause channel-misconfig
+errdisable recovery cause pagp-flap
+errdisable recovery cause dtp-flap
+errdisable recovery cause link-flap
+errdisable recovery cause sfp-config-mismatch
+errdisable recovery cause gbic-invalid
+errdisable recovery cause l2ptguard
+errdisable recovery cause psecure-violation
+errdisable recovery cause port-mode-failure
+errdisable recovery cause dhcp-rate-limit
+errdisable recovery cause pppoe-ia-rate-limit
+errdisable recovery cause mac-limit
+errdisable recovery cause storm-control
+errdisable recovery cause inline-power
+errdisable recovery cause arp-inspection
+errdisable recovery cause link-monitor-failure
+errdisable recovery cause oam-remote-failure
+errdisable recovery cause loopback
+errdisable recovery cause psp
+errdisable recovery cause mrp-miscabling
+errdisable recovery cause loopdetect
+errdisable recovery interval 60
+!
+enable secret 9 $9$2J7kDdbg9BL2s.$B1Au850vVqcaKGiXU6PxZlP3KYwoaYTekm6W0Z4RkPE
+!
+username tmp privilege 15 secret 9 $9$Nm72oKJEuOKyZU$Nt/h0zlPvbA4p53AVaQwGcj68wfAlBDk973oOysLZIQ
+username itops secret 9 $9$TqgSpq.tVMEgCU$gFuN/KpuarVGrIMXlN68ATzcDlYz1lid73fSvfrfrA6
+!
+redundancy
+crypto engine compliance shield disable
+!
+!
+!
+!
+!
+transceiver type all
+ monitoring
+!
+vlan 200 
+!
+vlan 999
+ name NATIVE-VLAN
+cdp timer 5
+!
+lldp run
+!
+class-map match-any system-cpp-police-mac-learning
+  description MAC Learning
+class-map match-any system-cpp-police-mcast-data
+  description MCAST Data traffic
+class-map match-any system-cpp-police-topology-control
+  description Topology control - STP
+class-map match-any system-cpp-police-unknown-uc
+  description Unknown UC Packets
+class-map match-any system-cpp-police-sw-forward
+  description Software forwarding
+class-map match-any system-cpp-police-proto-snoop-v6
+  description Protocol snooping v6
+class-map match-any system-cpp-default
+  description Inter FED Traffic 
+class-map match-any system-cpp-police-proto-snoop-v4
+  description Protocol snooping v4
+class-map match-any system-cpp-police-rip-bc
+  description RIP Broadcast
+class-map match-any system-cpp-police-svl-ctrl
+  description NGSVL IPC Traffic
+class-map match-any system-cpp-police-mpls-oam
+  description MPLS OAM (traceroute, ping etc)
+class-map match-any system-cpp-police-dhcp-v6
+  description DHCP V6
+class-map match-any system-cpp-police-dhcp-v4
+  description DHCP V4
+class-map match-any system-cpp-police-forus
+  description Forus Address resolution and Forus traffic
+class-map match-any system-cpp-police-icmp-v6
+  description ICMP redirect, ICMP_GEN over IPv6
+class-map match-any system-cpp-police-icmp-v4
+  description ICMP redirect, ICMP_GEN over IPv4
+class-map match-any system-cpp-police-ospf-v6
+  description OSPF over IPv6
+class-map match-any system-cpp-police-ospf-v4
+  description OSPF over IPv4
+class-map match-any system-cpp-police-arp
+  description Address Resolution Protocol
+class-map match-any system-cpp-police-igrp-v4
+  description IGRP and EIGRP over IPv4
+class-map match-any system-cpp-police-fhrp-v4
+  description VRRP, HSRP, GLBP over IPv4
+class-map match-any system-cpp-police-igrp-v6
+  description IGRP and EIGRP over IPv6
+class-map match-any system-cpp-police-fhrp-v6
+  description VRRP, HSRP, GLBP over IPv6
+class-map match-any system-cpp-police-fragment-v4
+  description IPv4 Fragmented Packets
+class-map match-any system-cpp-police-fragment-v6
+  description IPv6 Fragmented Packets
+class-map match-any system-cpp-police-ldp-v4
+  description LDP (MPLS) over IPv4
+class-map match-any system-cpp-police-ldp-v6
+  description LDP (MPLS) over IPv6
+class-map match-any system-cpp-police-l2-control
+  description L2 control
+class-map match-any system-cpp-police-lacp
+  description LACP control traffic for ether channel
+class-map match-any system-cpp-police-bgp-v4
+  description BGP sessions over IPv4
+class-map match-any system-cpp-police-bgp-v6
+  description BGP sessions over IPv6
+class-map match-any system-cpp-police-rip-v6
+  description RIP over IPv6
+class-map match-any system-cpp-police-alt-sw-forward
+  description Alternate Software forwarding
+class-map match-any system-cpp-police-rip-v4
+  description RIP over IPv4
+class-map match-any system-cpp-police-mtu-ttl-fail
+  description MTU/TTL 0/TTL 1 failures
+class-map match-any system-cpp-police-isis
+  description IS-IS protocol
+class-map match-any system-cpp-police-bfd-v4
+  description BFD and BFD Echo over IPv4
+class-map match-any system-cpp-police-udp-v4
+  description UDP V4
+class-map match-any system-cpp-police-mcast-rpf-fail
+  description MCAST Data RPF fail
+class-map match-any system-cpp-police-bfd-v6
+  description BFD and BFD Echo over IPv6
+class-map match-any system-cpp-police-udp-v6
+  description UDP V6
+class-map match-any non-client-nrt-class
+class-map match-any system-cpp-police-tcp-v6
+  description TCP V6
+class-map match-any system-cpp-police-tcp-v4
+  description TCP V4
+class-map match-any system-cpp-default-v6
+  description Inter FED Traffic 
+class-map match-any system-cpp-default-v4
+  description Inter FED Traffic 
+class-map match-any system-cpp-police-dhcp-snooping
+  description DHCP snooping
+class-map match-any system-cpp-police-svl-ipc
+  description NGSVL IPC Traffic
+class-map match-any system-cpp-police-mcast-ctrl-v4
+  description MCAST control packets over IPv4
+class-map match-any system-cpp-police-system-critical
+  description System Critical and Gold Pkt
+class-map match-any system-cpp-police-mcast-register-v4
+  description MCAST v4 Register traffic
+class-map match-any system-cpp-police-lisp-ctrl
+  description LISP Control Packets
+class-map match-any system-cpp-police-mcast-ctrl-v6
+  description MCAST control packets over IPv6
+class-map match-any system-cpp-police-mcast-register-v6
+  description MCAST v6 Register traffic
+!
+policy-map system-cpp-policy
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Port-channel100
+ description hyd-auto-kvm-acsw01 - Po100 TRENDME
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed nonegotiate
+ storm-control broadcast level bps 100k
+ spanning-tree link-type point-to-point
+ spanning-tree cost 50
+!
+interface Port-channel101
+ description hyd-auto-kvm-acsw02 - Po101 TRENDME
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed nonegotiate
+ storm-control broadcast level bps 100k
+ spanning-tree link-type point-to-point
+!
+interface Port-channel102
+ description hyd-f21a-kvm-acsw01 - Po102 TRENDME
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed nonegotiate
+ storm-control broadcast level bps 100k
+ spanning-tree link-type point-to-point
+!
+interface Port-channel103
+ description hyd-f21b-kvm-acsw01 - Po103 TRENDME
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed nonegotiate
+ storm-control broadcast level bps 100k
+ spanning-tree link-type point-to-point
+!
+interface GigabitEthernet0/0
+ vrf forwarding Mgmt-vrf
+ ip dhcp client client-id ascii cisco-b44c.903b.1400-Gi0/0
+ ip address 10.221.100.41 255.255.255.0
+ no ip redirects
+ no ip proxy-arp
+ negotiation auto
+!
+interface HundredGigE1/0/1
+ description hyd-auto-kvm-acsw01 Hu1/1/1 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 100 mode active
+!
+interface HundredGigE1/0/2
+ description hyd-auto-kvm-acsw01 Hu1/1/2 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 100 mode active
+!
+interface HundredGigE1/0/3
+ description hyd-auto-kvm-acsw01 Hu1/1/3 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 100 mode active
+!
+interface HundredGigE1/0/4
+ description hyd-auto-kvm-acsw01 Hu1/1/4 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 100 mode active
+!
+interface HundredGigE1/0/5
+ description hyd-auto-kvm-acsw02 Hu1/1/1 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 101 mode active
+!
+interface HundredGigE1/0/6
+ description hyd-auto-kvm-acsw02 Hu1/1/2 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 101 mode active
+!
+interface HundredGigE1/0/7
+ description hyd-auto-kvm-acsw02 Hu1/1/3 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 101 mode active
+!
+interface HundredGigE1/0/8
+ description hyd-auto-kvm-acsw02 Hu1/1/4 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 101 mode active
+!
+interface HundredGigE1/0/9
+ description hyd-f21b-kvm-acsw01 Hu1/1/1 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 103 mode active
+!
+interface HundredGigE1/0/10
+ description hyd-f21b-kvm-acsw01 Hu1/1/3 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 103 mode active
+!
+interface HundredGigE1/0/11
+ description hyd-f21b-kvm-acsw01 Hu1/1/2 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 103 mode active
+!
+interface HundredGigE1/0/12
+ description hyd-f21b-kvm-acsw01 Hu1/1/4 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 103 mode active
+!
+interface HundredGigE1/0/13
+ description hyd-f21a-kvm-acsw01 Hu1/1/1 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 102 mode active
+!
+interface HundredGigE1/0/14
+ description hyd-f21a-kvm-acsw01 Hu1/1/2 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 102 mode active
+!
+interface FourHundredGigE1/0/15
+ speed 100000
+!
+interface FourHundredGigE1/0/16
+ speed 100000
+!
+interface FourHundredGigE1/0/17
+!
+interface FourHundredGigE1/0/18
+!
+interface FourHundredGigE1/0/19
+!
+interface FourHundredGigE1/0/20
+!
+interface FourHundredGigE1/0/21
+!
+interface FourHundredGigE1/0/22
+!
+interface HundredGigE1/0/23
+ speed 100000
+!
+interface HundredGigE1/0/24
+ speed 100000
+!
+interface HundredGigE1/0/25
+ description hyd-f21a-kvm-acsw01 Hu1/1/3 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 102 mode active
+!
+interface HundredGigE1/0/26
+ description hyd-f21a-kvm-acsw01 Hu1/1/4 AUTOTREND
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 200,999
+ switchport mode trunk
+ switchport nonegotiate
+ mtu 9198
+ speed 100000
+ storm-control broadcast level bps 100k
+ channel-group 102 mode active
+!
+interface HundredGigE1/0/27
+!
+interface HundredGigE1/0/28
+!
+interface HundredGigE1/0/29
+!
+interface HundredGigE1/0/30
+!
+interface HundredGigE1/0/31
+!
+interface HundredGigE1/0/32
+!
+interface HundredGigE1/0/33
+!
+interface HundredGigE1/0/34
+!
+interface HundredGigE1/0/35
+!
+interface HundredGigE1/0/36
+!
+interface AppGigabitEthernet1/0/1
+!
+interface AppGigabitEthernet1/0/2
+!
+interface Vlan1
+ no ip address
+!
+interface Vlan200
+ description Management VLAN
+ ip address 192.168.1.1 255.255.255.0
+!
+ip forward-protocol nd
+no ip http server
+ip http authentication local
+no ip http secure-server
+ip http client source-interface GigabitEthernet0/0
+ip pim rp-address 10.9.255.254
+ip pim ssm default
+ip tftp source-interface GigabitEthernet0/0
+ip route vrf Mgmt-vrf 0.0.0.0 0.0.0.0 10.221.100.1
+ip ssh bulk-mode 131072
+ip ssh time-out 60
+ip ssh authentication-retries 5
+ip scp server enable
+!
+!
+ip access-list extended acl-vty
+ 10 permit ip 10.221.0.0 0.0.255.255 any
+ 20 permit ip 10.107.0.0 0.0.255.255 any
+!
+logging history size 9
+logging facility syslog
+logging source-interface GigabitEthernet0/0 vrf Mgmt-vrf
+logging host 10.10.12.14 vrf Mgmt-vrf
+logging host 10.10.12.160 vrf Mgmt-vrf
+logging host 10.250.34.92 vrf Mgmt-vrf
+ip access-list standard 1900
+ 10 permit 10.12.2.8
+ 20 permit 10.13.2.8
+ 30 permit 10.106.184.96 0.0.0.31
+ 40 permit 10.106.148.32 0.0.0.31
+ 50 permit 10.106.192.0 0.0.0.255
+ 60 permit 10.250.17.0 0.0.0.255
+ 70 permit 10.250.18.0 0.0.1.255
+ 80 permit 10.250.33.0 0.0.0.255
+ 90 permit 10.250.34.0 0.0.1.255
+ 100 permit 10.250.49.0 0.0.0.255
+ 110 permit 10.250.50.0 0.0.1.255
+ 120 permit 10.250.65.0 0.0.0.255
+ 130 permit 10.250.66.0 0.0.1.255
+ 140 permit 10.221.0.0 0.0.255.255
+ 150 deny   any log
+ip access-list standard 1950
+ 10 permit 10.8.109.177
+ 20 permit 10.45.33.9
+ 30 permit 10.88.249.145
+ 40 permit 10.21.210.147
+ 50 permit 10.8.116.69
+ 60 permit 10.8.108.150
+ 70 permit 10.21.140.201
+ 80 permit 10.21.140.206
+ 90 deny   any log
+!
+snmp-server community Engin3oFZNe7 RO 1900
+snmp-server trap-source GigabitEthernet0/0
+snmp-server location HYD Auto
+snmp-server contact ITOpsNetworkSupport@ea.com
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server enable traps flowmon
+snmp-server enable traps entity-perf throughput-notif
+snmp-server enable traps call-home message-send-fail server-fail
+snmp-server enable traps tty
+snmp-server enable traps eigrp
+snmp-server enable traps ospf state-change
+snmp-server enable traps ospf errors
+snmp-server enable traps ospf retransmit
+snmp-server enable traps ospf lsa
+snmp-server enable traps ospf cisco-specific state-change nssa-trans-change
+snmp-server enable traps ospf cisco-specific state-change shamlink interface
+snmp-server enable traps ospf cisco-specific state-change shamlink neighbor
+snmp-server enable traps ospf cisco-specific errors
+snmp-server enable traps ospf cisco-specific retransmit
+snmp-server enable traps ospf cisco-specific lsa
+snmp-server enable traps bfd
+snmp-server enable traps smart-license
+snmp-server enable traps auth-framework sec-violation
+snmp-server enable traps rep
+snmp-server enable traps aaa_server
+snmp-server enable traps memory bufferpeak
+snmp-server enable traps config-copy
+snmp-server enable traps config
+snmp-server enable traps config-ctid
+snmp-server enable traps energywise
+snmp-server enable traps fru-ctrl
+snmp-server enable traps entity
+snmp-server enable traps flash insertion removal lowspace
+snmp-server enable traps power-ethernet police
+snmp-server enable traps cpu threshold
+snmp-server enable traps syslog
+snmp-server enable traps udld link-fail-rpt
+snmp-server enable traps udld status-change
+snmp-server enable traps vtp
+snmp-server enable traps vlancreate
+snmp-server enable traps vlandelete
+snmp-server enable traps port-security
+snmp-server enable traps envmon
+snmp-server enable traps stackwise
+snmp-server enable traps mvpn
+snmp-server enable traps pw vc
+snmp-server enable traps ipsla
+snmp-server enable traps dhcp
+snmp-server enable traps event-manager
+snmp-server enable traps ike policy add
+snmp-server enable traps ike policy delete
+snmp-server enable traps ike tunnel start
+snmp-server enable traps ike tunnel stop
+snmp-server enable traps ipsec cryptomap add
+snmp-server enable traps ipsec cryptomap delete
+snmp-server enable traps ipsec cryptomap attach
+snmp-server enable traps ipsec cryptomap detach
+snmp-server enable traps ipsec tunnel start
+snmp-server enable traps ipsec tunnel stop
+snmp-server enable traps ipsec too-many-sas
+snmp-server enable traps ospfv3 state-change
+snmp-server enable traps ospfv3 errors
+snmp-server enable traps ipmulticast
+snmp-server enable traps msdp
+snmp-server enable traps pim neighbor-change rp-mapping-change invalid-pim-message
+snmp-server enable traps bridge newroot topologychange
+snmp-server enable traps stpx inconsistency root-inconsistency loop-inconsistency
+snmp-server enable traps bgp cbgp2
+snmp-server enable traps hsrp
+snmp-server enable traps isis
+snmp-server enable traps cef resource-failure peer-state-change peer-fib-state-change inconsistency
+snmp-server enable traps lisp
+snmp-server enable traps nhrp nhs
+snmp-server enable traps nhrp nhc
+snmp-server enable traps nhrp nhp
+snmp-server enable traps nhrp quota-exceeded
+snmp-server enable traps local-auth
+snmp-server enable traps entity-diag boot-up-fail hm-test-recover hm-thresh-reached scheduled-test-fail
+snmp-server enable traps mpls rfc ldp
+snmp-server enable traps mpls ldp
+snmp-server enable traps mpls rfc traffic-eng
+snmp-server enable traps mpls traffic-eng
+snmp-server enable traps mpls fast-reroute protected
+snmp-server enable traps bulkstat collection transfer
+snmp-server enable traps mac-notification change move threshold
+snmp-server enable traps errdisable
+snmp-server enable traps vlan-membership
+snmp-server enable traps transceiver all
+snmp-server enable traps vrfmib vrf-up vrf-down vnet-trunk-up vnet-trunk-down
+snmp-server enable traps rf
+snmp-server enable traps mpls vpn
+snmp-server enable traps mpls rfc vpn
+snmp-server host 10.250.19.223 vrf Mgmt-vrf version 2c Engin3oFZNe7 
+snmp-server host 10.250.35.223 vrf Mgmt-vrf version 2c Engin3oFZNe7 
+snmp ifmib ifindex persist
+snmp mib persist cbqos
+tacacs server AAA_va1-ise-psn03
+ address ipv4 10.221.0.36
+ key 7 10693D5D373716021940
+ timeout 10
+tacacs server AAA_ca1-ise-psn04
+ address ipv4 10.221.4.36
+ key 7 10693D5D373716021940
+ timeout 10
+!
+!
+!
+!
+control-plane
+ service-policy input system-cpp-policy
+!
+!
+banner login ^C
+hyd-kvm-core01 Login:
+*********************************** WARNING **********************************
+    WARNING:  This is a secure device. By accessing this device you
+    acknowledge that you are an employee or agent of Electronic Arts Inc.
+    with authorization to access Electronic Arts Inc. confidential and
+    trade secret information.  Such authorization may be revoked at any
+    time at the sole discretion of Electronic Arts Inc.  All copyrightable
+    text and graphics and the presentation of all materials (including
+    information in the public domain) are (c) 2007 Electronic Arts Inc.
+    All rights reserved. Any copying, distribution, retransmission or
+    modification of information or materials on this device, whether in
+    electronic form or hard copy form, without the express prior written
+    permission of Electronic Arts Inc. is strictly prohibited and will be
+    pursued to the fullest extent allowable by law.
+
+    NOTICE: Your access to this device may be monitored by
+            Electronic Arts Inc.  There is no Right To Privacy
+            on this system.
+*********************************** WARNING **********************************
+^C
+!
+line con 0
+ authorization commands 1 CONSOLE
+ authorization commands 15 CONSOLE
+ authorization exec CONSOLE
+ logging synchronous
+ login authentication CONSOLE
+ stopbits 1
+line aux 0
+ transport output none
+line vty 0 1
+ access-class acl-vty in vrf-also
+ logging synchronous
+ transport input ssh
+ transport output none
+line vty 2
+ access-class acl-vty in vrf-also
+ logging synchronous
+ length 0
+ transport input ssh
+ transport output none
+line vty 3 4
+ access-class acl-vty in vrf-also
+ logging synchronous
+ transport input ssh
+ transport output none
+line vty 5 15
+ access-class acl-vty in vrf-also
+ logging synchronous
+ transport input ssh
+ transport output none
+!
+call-home
+ ! If contact email address in call-home is configured as sch-smart-licensing@cisco.com
+ ! the email address configured in Cisco Smart License Portal will be used as contact email address to send SCH notifications.
+ contact-email-addr sch-smart-licensing@cisco.com
+ profile "CiscoTAC-1"
+  active
+  destination transport-method http
+ntp source GigabitEthernet0/0
+ntp server vrf Mgmt-vrf 10.21.160.16
+ntp server vrf Mgmt-vrf 10.106.192.66
+ntp server vrf Mgmt-vrf 10.14.250.229
+ntp server vrf Mgmt-vrf 10.45.77.78
+ntp server vrf Mgmt-vrf 10.107.112.62
+ntp server vrf Mgmt-vrf 10.17.42.151
+!
+!
+!
+!
+!
+!
+pnp profile pnp-inventory
+ transport http host 10.221.0.50 port 80 vrf Mgmt-vrf
+!
+end

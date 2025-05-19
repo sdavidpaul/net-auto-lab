@@ -1,0 +1,8 @@
+all:
+  hosts:
+    hyd-kvm-core01:
+      ansible_host: hyd-kvm-core01.net.ea.com
+      ansible_user: dsuresh
+      ansible_password: Themobilesamsung#1234
+      ansible_network_os: cisco.ios.ios
+      ansible_connection: network_cli
